@@ -1,0 +1,3 @@
+html, body { margin: 0; padding: 0; height: 100%; background: #0b1020; overflow: hidden; }
+#wrap { position: fixed; inset: 0; background: #05070f; }
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; background: #79b5d9; }

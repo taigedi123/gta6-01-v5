@@ -20,6 +20,15 @@ import { buildDossier } from './vendor/makefun-game.ts';
 const here = fileURLToPath(new URL('.', import.meta.url));
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
+// Solmar Bay: Neon Shores — my open-world crime game for gta6-01: a sunny
+// coastal city of fourteen districts where Sol Vega runs fifteen story
+// missions, drives twelve car types and three boats, outruns a five-star
+// police response, and finishes with the Gilded Palm casino heist. The game
+// itself is the static game/ folder copied below; this program only hands
+// it in, exactly as the kit's plumbing intends.
+const GAME_TITLE = 'Solmar Bay: Neon Shores';
+console.log(`handing in ${GAME_TITLE}: copying game/ and screenshots/ to ${out}`);
+
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
 mkdirSync(join(out, 'screenshots'), { recursive: true });

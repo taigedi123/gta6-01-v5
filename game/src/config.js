@@ -1,61 +1,41 @@
-// Every tuning number and colour in one place. The playfield is a fixed 1280x720 logical area;
-// the renderer scales it to the window, so no rule below depends on the screen size.
+// Solmar Bay: Neon Shores — world constants, district map and tuning tables.
+// Everything in this file is data: the shape of the city, the names of its
+// neighbourhoods, and the numbers the other systems tune themselves against.
+'use strict';
+const SB = window.SB || (window.SB = {});
 
-export const FIELD = { width: 1280, height: 720, groundY: 664 };
+SB.WORLD_W = 4800;          // world width in pixels, west beach to east hills
+SB.WORLD_H = 3400;          // world height, north hills to south ocean
+SB.OCEAN_Y = 2920;          // waterline: south of this the bay begins
+SB.TILE_ROAD = 92;          // road width used by the renderer and AI lanes
 
-/** The simulation's fixed step, in seconds: 60 updates a second whatever the display's rate. */
-export const STEP = 1 / 60;
+// Fourteen named districts. Each has a ground tint, a building palette and a
+// flavour line the HUD shows when the player crosses into it.
+SB.DISTRICTS = [
+  { name: 'Downtown Solmar',    x: 1500, y: 1050, w: 1000, h: 800,  ground: '#8d9299', roof: ['#5b6b7d', '#71808f', '#46586e'], tall: true },
+  { name: 'Marina Azul',        x: 1500, y: 2450, w: 900,  h: 470,  ground: '#c9b98a', roof: ['#e8e2d2', '#d7c9a8'], tall: false },
+  { name: 'Coral Beachfront',   x: 0,    y: 2350, w: 1500, h: 570,  ground: '#e6d29a', roof: ['#f2e7c8', '#e8b4a0'], tall: false },
+  { name: 'Casino Row',         x: 2500, y: 2350, w: 1100, h: 570,  ground: '#a08bb0', roof: ['#8e44ad', '#c0392b', '#d4ac0d'], tall: true },
+  { name: 'Solmar Intl Airport', x: 3600, y: 2450, w: 1200, h: 470,  ground: '#9aa0a3', roof: ['#cfd6da'], tall: false, flat: true },
+  { name: 'Palmetto Suburbs',   x: 2500, y: 1050, w: 1100, h: 800,  ground: '#7fae6d', roof: ['#b5654d', '#8f7f5f', '#6d8ea8'], tall: false },
+  { name: 'Rusthook Docks',     x: 3600, y: 1550, w: 1200, h: 900,  ground: '#7d7468', roof: ['#8a6d4f', '#5f707a'], tall: false },
+  { name: 'Verdant Hills',      x: 2500, y: 0,    w: 2300, h: 1050, ground: '#5f9455', roof: ['#caa27a', '#a8845c'], tall: false },
+  { name: 'Old Town Mercado',   x: 0,    y: 1050, w: 1500, h: 800,  ground: '#c2a878', roof: ['#c96f4a', '#a85f3f', '#d9a05b'], tall: false },
+  { name: 'University Quarter', x: 0,    y: 0,    w: 1500, h: 1050, ground: '#86a860', roof: ['#d8cf9f', '#9fb4c7'], tall: false },
+  { name: 'Neon Mile',          x: 1500, y: 1850, w: 1000, h: 500,  ground: '#7a6f92', roof: ['#e84393', '#6c5ce7', '#00b8a9'], tall: true },
+  { name: 'Canal District',     x: 1500, y: 0,    w: 1000, h: 1050, ground: '#6f9e8f', roof: ['#7fb3a3', '#5d8a7a'], tall: false },
+  { name: 'Fisherman Flats',    x: 0,    y: 1850, w: 1500, h: 500,  ground: '#b0a284', roof: ['#94a7b8', '#c7b299'], tall: false },
+  { name: 'Airport Heights',    x: 3600, y: 1050, w: 1200, h: 500,  ground: '#93a06b', roof: ['#b8a888', '#8fa3b8'], tall: false },
+];
 
-export const PLAYER = {
-  width: 72,
-  height: 24,
-  speed: 560,
-  invulnerable: 1.5,
-};
+// Vertical avenues (west to east) and horizontal boulevards (north to south).
+SB.AVENUES = [220, 760, 1300, 1840, 2380, 2920, 3460, 4000, 4540];
+SB.BOULEVARDS = [240, 700, 1160, 1620, 2080, 2540, 2760];
 
-export const LIVES = 3;
-
-export const BLOCK = {
-  minWidth: 40,
-  maxWidth: 110,
-  height: 36,
-  speed: 240,
-  speedPerLevel: 30,
-  speedJitter: 90,
-  interval: 0.55,
-  intervalScale: 0.88,
-  minInterval: 0.14,
-  dodgePoints: 1,
-};
-
-export const COIN = {
-  size: 24,
-  speed: 190,
-  speedPerLevel: 14,
-  interval: 1.4,
-  intervalJitter: 0.8,
-  points: 10,
-};
-
-/** Seconds of play per level, and the last level: speeds and spawn rates stop growing there. */
-export const LEVEL = { seconds: 12, max: 12 };
-
-/** How many falling things can exist at once; the pool is allocated once, at boot. */
-export const POOL_SIZE = 64;
-
-export const PALETTE = {
-  backdrop: '#11141b',
-  sky: '#1b1f2a',
-  ground: '#2a3040',
-  player: '#4fc3f7',
-  block: '#e5534b',
-  coin: '#f2c94c',
-  panel: '#252b38',
-  text: '#eef1f5',
-  muted: '#8b93a3',
-};
-
-export const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
-
-/** Where the best score is kept between visits (this browser only). */
-export const BEST_KEY = 'block-dodger.best';
+SB.START = { x: 1960, y: 1618 }; // on the boulevard in Downtown Solmar, car parked just east
+SB.KEYS_HELP = [
+  'WASD / Arrows — move & drive', 'E — enter / exit vehicle, use marker',
+  'Shift — sprint / boost', 'Space — handbrake / jump',
+  'Mouse — aim, Click — fire', '1-9 — switch weapon',
+  'E at a gold M station — ride the metro ($5)', 'P or Esc — pause', 'Properties with a ⌂ are save points',
+];
